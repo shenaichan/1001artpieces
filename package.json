@@ -12,7 +12,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^1.7.9",
     "express": "^4.21.2",
+    "pug": "^3.0.3",
     "tsconfig-paths": "^4.2.0"
   },
   "devDependencies": {
