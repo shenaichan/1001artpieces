@@ -1,0 +1,18 @@
+html
+  head
+    title Hello World
+  body
+    h1 Random art piece yay
+
+    form(hx-post="/caption" hx-target="#pages" hx-swap="beforeend")
+      textarea(name="caption" rows="4" cols="50" required)
+      br
+      button(type="submit") Add Caption
+
+    h2 Pages:
+
+    #pages
+      //- each page in pages
+      //-   page
+    
+  script(src="https://unpkg.com/htmx.org@2.0.3" integrity="sha384-0895/pl2MU10Hqc6jd4RvrthNlDiE9U1tWmX7WRESftEDRosgxNsQG/Ze9YMRzHq" crossorigin="anonymous")

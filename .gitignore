@@ -1,3 +1,6 @@
 node_modules
 
 dist
+
+prisma/migrations
+prisma/database.db
