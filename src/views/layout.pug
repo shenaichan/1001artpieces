@@ -1,18 +1,42 @@
 html
   head
     title Hello World
+    link(rel="stylesheet" href="/css/reset.css")
+    link(rel="stylesheet" href="/css/layout.css")
+    link(rel="stylesheet" href="/css/page.css")
   body
-    h1 Random art piece yay
+    h1 storytelling using the Met API
 
-    form(hx-post="/caption" hx-target="#pages" hx-swap="beforeend")
-      textarea(name="caption" rows="4" cols="50" required)
-      br
-      button(type="submit") Add Caption
+    #pages 
+      each page in pages
+        include components/page.pug
+    
+      #newPage
+        image(id="newImage" src=newImage)
 
-    h2 Pages:
+        textarea(id="caption" rows="4" cols="50")
+        br
+        button(id="submit") Add Caption
 
-    #pages
-      //- each page in pages
-      //-   page
     
   script(src="https://unpkg.com/htmx.org@2.0.3" integrity="sha384-0895/pl2MU10Hqc6jd4RvrthNlDiE9U1tWmX7WRESftEDRosgxNsQG/Ze9YMRzHq" crossorigin="anonymous")
+  script.
+    const textArea = document.getElementById('caption');
+    const button = document.getElementById('submit');
+
+    textArea.addEventListener('input', () => {
+      button.disabled = textArea.value.trim() === '';
+    });
+
+    document.getElementById('submit').addEventListener('click', () => {
+      const imageUrl = document.getElementById('newImage').src;
+      const caption = document.getElementById('caption').value;
+      htmx.ajax('POST', '/caption', {
+        target: '#newPage',
+        swap: 'outerHTML',
+        values: {
+          imageUrl,
+          caption
+        }
+      })
+    });

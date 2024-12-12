@@ -4,3 +4,6 @@ dist
 
 prisma/migrations
 prisma/database.db
+prisma/database.db-journal
+
+objectIds.json

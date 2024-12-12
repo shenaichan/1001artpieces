@@ -1,18 +1,23 @@
 import express, { Express, Request, Response } from "express";
 import axios from "axios";
 import { PrismaClient } from '@prisma/client';
-// import pug from "pug";
+import objectIDs from 'objectIds.json';
 
 const app: Express = express();
+
 app.set('views', './src/views');
 app.set('view engine', 'pug');
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(express.static('./src/assets'));
+
 const port = 3000;
+
 const prisma = new PrismaClient();
 
 const BASE_URL = "https://collectionapi.metmuseum.org/public/collection/v1"
-let objectIDs: number[];
 
 async function getRandPieceUrl() {
     let imageUrl = "";
@@ -27,20 +32,28 @@ async function getRandPieceUrl() {
 }
 
 async function initializeData() {
-    const artResponse = await axios.get(`${BASE_URL}/objects`);
-    objectIDs = artResponse.data.objectIDs;
     // const book = await prisma.book.create({});
     // console.log(book);
 }
 
 initializeData().then(async () => {
     app.get('/', async (req: Request, res: Response) => {
-        res.render('layout');
+        const pages = await prisma.page.findMany({
+            where: {
+                bookId: 1
+            },
+            select: {
+                imageUrl: true,
+                caption: true
+            }
+        });
+        console.log(pages);
+        const newImage = await getRandPieceUrl();
+        res.render('layout', { newImage, pages });
     });
 
     app.post('/caption', async (req: Request, res: Response) => {
-        const imageUrl = await getRandPieceUrl();
-        const { caption } = req.body;
+        const { imageUrl, caption } = req.body;
         console.log(caption);
         const pageCount = await prisma.page.count({
             where: {
@@ -51,14 +64,14 @@ initializeData().then(async () => {
             data: {
                 bookId: 1,
                 number: pageCount+1,
-                imageUrl: imageUrl,
-                caption: caption
+                imageUrl,
+                caption
             }
         });
         console.log(page)
         
 
-        res.render('components/page.pug', { imageUrl: imageUrl, caption: caption });
+        res.render('components/page.pug', { page: {imageUrl, caption} });
     })
     
     app.listen(port, () => {
